@@ -1,0 +1,30 @@
+Quellen:
+https://www.itnator.net/bildschirm-monitor-seriennummer-auslesen-mit-powershell/
+
+3 Datenbanktabellen:
+Personen
+Monitore
+Computer
+Laptops
+
+evtl. noch die Rechnung und Lieferschein
+
+
+
+Neues-Nummernsystem:
+Jeder Rechner der sich das erste mal an einem Datenbankserver meldet bekommt automatisch eine Nummer(ID) zugeteilt.
+
+Wenn ein Rechner eine bestimmte Zeit sich nicht am Datenbankserver meldet könnte eine Informations-Mail oder sonstige Mitteilungen gesendet werden.
+Optimal wäre wenn ein weiterer Server der dieses Verhalten der Anmeldungen überwacht und dann eine Abfrage im AD startet ob der Computer darin noch enthalten ist.
+
+Verbindung zwischen Benutzer und Computer mittels AD bestimmen. MAC-Adresse meldet sich das erste Mal -> Mit dem Hostname des PCs wird über die Beschreibung im AD der 
+zugeteilte Benutzer bestimmt und in der Datenbank gespeichert mit den dazugehörigen Informationen aus dem AD -> es muss immer wieder abgeglichen werden -> vllt kann man sich den Benutzer sparen und direkt aus dem AD arbeiten als Teil des Datenbankmodels
+
+Baramundi hat die MAC-Adresse von allen iPads und iPhones bzw Modellnamen
+Wo werden diese gespeichert? Kann man diese auch in dieses IVS System integrieren?
+
+Preiseingabe für PCs und Monitore -> Wenn mehrere PC oder Monitore des gleichen Typs gekauft werden muss der Preis 1x eingegeben werden und wird für alle dieser neuen Typen in der Datenbank gespeichert (jährlicher Preisverlust 20% bei inbetriebnahme -> dann jährlich 10 %)
+
+Druckerabfragen auch mit MAC und Druckername, Modell und Hersteller, Raum und evtl. Zusatzfeld für Beschreibung (Stockwerksdrucker, Vorzimmer etc.)
+
+Historiefunktion von Geräten, Räumen, Personen usw.
