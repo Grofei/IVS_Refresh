@@ -351,7 +351,6 @@ try {
     Write-Host "ERROR : Unable to stop DB-Connetion: $DBName on $DBH`n$Error[0]"
   }
   
-  
 
   If($NewHostsPC -eq $null)
 {

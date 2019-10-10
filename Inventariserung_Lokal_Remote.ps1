@@ -63,7 +63,7 @@ $NetAdapter = $MAC | Select-Object Name,InterfaceDescription, MacAddress
 $IP = (Resolve-DnsName $env:computername).ipaddress
 $domain = ($computer).Domain
 $Partition = $Partition | Select-Object DriveLetter, Size, Type
-$UserLoggedIn = Get-childItem \\$HostComputer\c$\Users | Select Name).Name
+$UserLoggedIn = (Get-childItem \\$HostComputer\c$\Users | Select Name).Name
 
 #-----------------------------------------------------------------------------------------------------------------------
 #Monitor(e)
@@ -208,8 +208,8 @@ $Software
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-$y = Read-Host "Soll Ergebnis gespeichert werden? (j)a (n)ein"
-If($y -eq "j"){
+$y = Read-Host "Was soll mit dem Ergebnis geschehen? (d)atei ()Datenbank (n)ur Ausgabe in Konsole"
+If($y -eq "d"){
     $pfad = Read-Host "Pfad + Dateinamen + Datei (C:\temp\)"
     $datei = Read-Host "Dateinamen + Datei (Inventarierung.txt)"
     If($pfad -and $datei){
@@ -219,9 +219,42 @@ If($y -eq "j"){
             $Software | Out-File $($pfad+$datei) -Encoding utf8 -Append
         }
         else{Write-Warning "Pfad ungueltig"}
-         
+        
     }
     else{Write-Warning "Pfad- und/oder Dateinameneingabe = NULL"}
+}
+elseif ($y -eq "db") {
+    #Verbindung zu DB aufbauen
+    $MySQLAdminUserName = "root"
+    $MySQLAdminPassword = ""
+    $MySQLDatabase = "Inventar"
+    $MySQLHost = "localhost"
+    $port = "3306"
+    $ConnectionString = "server=" + $MySQLHost + ";port=$port;uid=" + $MySQLAdminUserName + ";pwd=" + $MySQLAdminPassword + ";database="+$MySQLDatabase
+
+        Try {
+        [void][System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+        $Connection = New-Object MySql.Data.MySqlClient.MySqlConnection
+        $Connection.ConnectionString = $ConnectionString
+        $Connection.Open()
+        }
+        Catch {
+        Write-Host "ERROR : Unable to start DB-Connetion: $MySQLDatabase on $MySQLHost`n$Error[0]"
+        }
+
+        try{
+            $ResultQueryPC = New-DBCommand -Connection $Connection -Command "Select * from t_computer Where MAC = '$MAC'"
+            If($ResultQueryPC -eq $null){
+            New-DBInsert -Connection $Connection -Insert "Insert into t_computer (Hostname,Model,SN,OS,InstallDate,RAM,MAC,CPU,GPU,Storage,DiskCount,LastConnect) Values ('$Hostname','$Model','$SN','$OSVersion', '$InstallDate','$RAM','$MAC', '$CPU_Name','$GPU_Name','$Storage','$DiskCounter','$date')"
+            }
+            else{
+                New-DBCommand -Connection $Connection -Command "Update t_computer Set Hostname = '$Hostname',Model='$Model',SN='$SN',OS='$OSVersion',InstallDate='$InstallDate',RAM='$RAM',CPU='$CPU_Name',GPU='$GPU_Name',Storage='$Storage',DiskCount='$DiskCounter',LastConnect='$date' Where MAC = '$MAC'"
+            }
+        }catch{
+            Write-Host "Error: Unable to insert the PC-Information into the database"
+        }
+
+        
 }
 
 
