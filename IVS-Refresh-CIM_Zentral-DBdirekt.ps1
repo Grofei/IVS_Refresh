@@ -20,6 +20,10 @@
 #.Requires –Modules MySqlCmdlets
 #.Requires MySQL Connector https://dev.mysql.com/downloads/file/?id=485753
 
+# Scriptpfad ermitteln
+$scriptPath = if($psise) {Split-Path $psise.CurrentFile.FullPath} else {$global:PSScriptRoot}
+# Funktionen Einbinden
+. "$scriptPath\_Funktionen_Database.ps1"
 
 #Verbindung zu DB aufbauen
 $MySQLAdminUserName = "root"
@@ -165,7 +169,7 @@ foreach($rpc in $PC_NB_Hostname)
                                     
                                     $sticks = $Disk | Where-Object {($_.DriveType -eq 2) -and ($_.Size -ne $null)} | Select-Object Description,PSComputerName,FileSystem,Size,VolumeSerialNumber
                                     $sticks | Add-Member -MemberType NoteProperty -Name 'Date' -Value "$date"
-                                    If($sticks -ne $null){$sticks | Export-Csv C:\temp\USB_SticksVerlauf.csv -Delimiter ";" -NoTypeInformation -Append -Encoding UTF8}
+                                    If($sticks -ne $null){$sticks | Export-Csv "C:\temp\USB_SticksVerlauf.csv" -Delimiter ";" -NoTypeInformation -Append -Encoding UTF8}
 
                                     $ResultQueryPC = New-DBCommand -Connection $Connection -Command "Select * from t_computer Where MAC = '$MAC'"
                                     If($ResultQueryPC -eq $null){
